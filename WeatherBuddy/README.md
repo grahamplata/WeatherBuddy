@@ -1,6 +1,6 @@
 # WeatherBuddy
 
-A Particle project named WeatherBuddy
+A weather interface for the coffee table.
 
 ## Welcome to your project!
 
@@ -33,3 +33,22 @@ When you're ready to compile your project, make sure you have the correct Partic
 - Everything in the `/src` folder, including your `.ino` application file
 - The `project.properties` file for your project
 - Any libraries stored under `lib/<libraryname>/src`
+- 
+
+## Notes for Local Development
+#### Placing Device in DFU Mode Via usb for Local Dev
+
+_Windows_ 
+```bash
+# List Serial Ports
+$ Get-WMIObject Win32_SerialPort
+# Set Baudrate to 14400 will force DFU Locally
+$ mode COMx 14400
+```
+_Mac_
+```bash
+# List Serial Ports
+$ ls /dev/cu*
+# Set Baudrate to 14400 will force DFU Locally
+$ stty -f /dev/cu.usbmodem144101 14400
+```
