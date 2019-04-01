@@ -1,1 +1,48 @@
-# init azure-pipelines.yml
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+variables:
+- group: particle-secrets
+
+trigger:
+- master
+
+pool:
+  vmImage: 'macOS-10.13'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '9.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install -g particle-cli
+  displayName: 'Install the Particle CLI'
+
+- script: |
+    particle login --username $(PARTICLE_USERNAME) --password $(PARTICLE_PASSWORD)
+  displayName: 'Login to Partcle CLI'
+
+- script: |
+    particle compile photon --target 1.0.1 weather-buddy-firmware --saveTo weatherBuddy.photon.bin
+  displayName: 'Build Firmware'
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: 'weatherBuddy.photon.bin'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+# GitHub Release
+- task: GithubRelease@0 
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  displayName: 'Create GitHub Release'      
+  inputs:
+    gitHubConnection: grahamplata
+    repositoryName: grahamplata/WeatherBuddy
+    tagSource: manual
+    tag: $(Build.BuildNumber) 
+    assets: $(Build.ArtifactStagingDirectory)/*.bin
