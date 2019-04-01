@@ -27,7 +27,7 @@ steps:
     displayName: "Login to Partcle CLI"
 
   - script: |
-      particle compile photon --target 1.0.1 WeatherBuddy/WeatherBuddy --saveTo WeatherBuddy.photon.bin
+      particle compile photon --target 1.0.1 WeatherBuddy --saveTo WeatherBuddy.photon.bin
     displayName: "Build Firmware"
 
   - task: CopyFiles@2
