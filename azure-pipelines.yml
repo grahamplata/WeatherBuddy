@@ -33,7 +33,7 @@ steps:
   - task: CopyFiles@2
     inputs:
       sourceFolder: "$(Build.SourcesDirectory)"
-      contents: "weatherBuddy.photon.bin"
+      contents: "WeatherBuddy.photon.bin"
       targetFolder: "$(Build.ArtifactStagingDirectory)"
 
   # GitHub Release
