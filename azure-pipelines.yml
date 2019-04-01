@@ -35,14 +35,3 @@ steps:
     sourceFolder: '$(Build.SourcesDirectory)'
     contents: 'weatherBuddy.photon.bin'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
-
-# GitHub Release
-- task: GithubRelease@0 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  displayName: 'Create GitHub Release'      
-  inputs:
-    gitHubConnection: grahamplata
-    repositoryName: grahamplata/WeatherBuddy
-    tagSource: manual
-    tag: $(Build.BuildNumber) 
-    assets: $(Build.ArtifactStagingDirectory)/*.bin
