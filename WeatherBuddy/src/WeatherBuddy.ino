@@ -14,27 +14,34 @@ USARTSerial &nexSerial = Serial1;
 NexText textLow(0, 3, "textLow");
 NexText textHigh(0, 4, "textHigh");
 NexText textTemp(0, 2, "textTemp");
-NexText textLocation(0, 5, "textLocation");
+NexText textLocation(0, 3, "textLocation");
 
 int temperatureLow = 0;
 int temperatureHigh = 0;
 int temperature = 0;
 float humidity = 0;
-
 char buffer[100] = {0};
 
-// Put initialization like pinMode and begin functions here.
-void setup(void) {
+/*
+ * Register a button object to the touch event list.
+ */
+
+// setup() runs once, when the device is first turned on.
+void setup(void)
+{
+  // Put initialization like pinMode and begin functions here.
   nexInit();                        // Set the baudrate which is for debug and communicate with Nextion screen.
   Time.zone(-5);                    // Set Time Zone to EST
 }
 
 // loop() runs over and over again, as quickly as it can execute.
-void loop(void) {
+void loop(void)
+{
   // The core of your code will likely live here.
 }
 
-String getTime() {
+String getTime()
+{
   String timeNow = Time.format(Time.now(), TIME_FORMAT_DEFAULT);
   timeNow = timeNow.substring(11, timeNow.length() - 6);
   return " " + timeNow;
