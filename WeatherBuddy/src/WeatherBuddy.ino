@@ -19,19 +19,43 @@ NexText textLocation(0, 5, "textLocation");
 int temperatureLow = 0;
 int temperatureHigh = 0;
 int temperature = 0;
-float humidity = 0;
 
 char buffer[100] = {0};
+
+NexTouch *nex_Listen_List[] = 
+{
+    &textLow,
+    &textHigh,
+    &textTemp,
+    NULL
+};
+
+
+void textTempPopCallback(void *ptr) {
+    NexText *text = (NexText *)ptr;
+    memset(buffer, 0, sizeof(buffer));
+    text->getText(buffer, sizeof(buffer));
+    if (strcmp(buffer,"ON")) {
+        digitalWrite(9, HIGH);
+        strcpy(buffer, "ON");
+    } else {
+        digitalWrite(9, LOW);
+        strcpy(buffer, "OFF");
+    }
+    text->setText(buffer);
+}
 
 // Put initialization like pinMode and begin functions here.
 void setup(void) {
   nexInit();                        // Set the baudrate which is for debug and communicate with Nextion screen.
+  textTemp.attachPop(textTempPopCallback, &textTemp);
   Time.zone(-5);                    // Set Time Zone to EST
 }
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop(void) {
   // The core of your code will likely live here.
+  nexLoop(nex_Listen_List);
 }
 
 String getTime() {
