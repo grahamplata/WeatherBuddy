@@ -10,20 +10,23 @@
 
 USARTSerial &nexSerial = Serial1;
 
-// Index Page Nexobject [page id:0,component id:1, component name: "b0"]
+// Nextion Objects and Pages
+// Page: 0 Nexobjects [page id:0,component id:1, component name: "helloText"]
 NexText textLow(0, 3, "textLow");
 NexText textHigh(0, 4, "textHigh");
 NexText textTemp(0, 2, "textTemp");
 NexText textLocation(0, 5, "textLocation");
 
+// Global temperature Variables
 int temperatureLow = 0;
 int temperatureHigh = 0;
 int temperature = 0;
 char *message = "Weather Buddy v0.1";
 
+// Utility Buffer
 char buffer[100] = {0};
 
-// Touch events to watch for.
+// Touch events
 NexTouch *nex_Listen_List[] =
     {
         // &textLow,
@@ -35,12 +38,16 @@ NexTouch *nex_Listen_List[] =
 // GPIO Variables
 int led = D7;
 
+// Function initialization
+int toggleLedState(String command);
+
+
+// Initialization function: Runs once on Boot
 void setup(void)
 {
-  // Initialization function
   // Set the baudrate which is for debug and communicate with Nextion screen.
   dbSerial.begin(9600);
-  nexInit();
+  nexInit(); // Begin connection
   defaultState(); // set initial button and text states
 
   // DateTime configurations
@@ -52,8 +59,9 @@ void setup(void)
   // Initializing port initial state
   digitalWrite(led, LOW);
 
-  // Register Cloud variables
+  // Register Particle Cloud variables and functions
   registerCloudVariables();
+  registerCloudFunctions();
 }
 
 // loop() runs over and over again, as quickly as it can execute.
@@ -74,6 +82,7 @@ void defaultState()
   textLocation.setText(buffer);
 }
 
+// Setup Functions
 // Registers Variables with the Particle Cloud
 void registerCloudVariables()
 {
@@ -81,4 +90,24 @@ void registerCloudVariables()
   Particle.variable("temperatureHigh", &temperatureHigh, INT);
   Particle.variable("temperature", &temperature, INT);
   Particle.variable("message", message, STRING);
+}
+
+void registerCloudFunctions()
+{
+  Particle.function("led", toggleLedState);
+}
+
+// test function
+int toggleLedState(String command)
+{
+  if (command == "on")
+  {
+    digitalWrite(led, HIGH);
+    return 0;
+  }
+  else
+  {
+    digitalWrite(led, LOW);
+    return 0;
+  }
 }
