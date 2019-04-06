@@ -16,62 +16,69 @@ NexText textHigh(0, 4, "textHigh");
 NexText textTemp(0, 2, "textTemp");
 NexText textLocation(0, 5, "textLocation");
 
-float temperatureLow = 0;
-float temperatureHigh = 0;
-float temperature = 0;
+int temperatureLow = 0;
+int temperatureHigh = 0;
+int temperature = 0;
 char *message = "Weather Buddy v0.1";
 
 char buffer[100] = {0};
 
 // Touch events to watch for.
-NexTouch *nex_Listen_List[] = 
-{
-    // &textLow,
-    // &textHigh,
-    // &textTemp,
-    // NULL
+NexTouch *nex_Listen_List[] =
+    {
+        // &textLow,
+        // &textHigh,
+        // &textTemp,
+        // NULL
 };
 
 // GPIO Variables
 int led = D7;
 
-void setup(void) {
-   // Initialization function
-   // Set the baudrate which is for debug and communicate with Nextion screen.
-   
-   dbSerial.begin(9600);
-   nexInit();
-   
-   // Nextion Buttons and text
-   // set initial text states
-    defaultState();
-    
+void setup(void)
+{
+  // Initialization function
+  // Set the baudrate which is for debug and communicate with Nextion screen.
+  dbSerial.begin(9600);
+  nexInit();
+  defaultState(); // set initial button and text states
 
-   // DateTime configurations
-   Time.zone(-5);
-   
-   // Setting port OUTPUT
-   pinMode(led, OUTPUT);
-   
-   // Initializing port initial state
-   digitalWrite(led, LOW);
+  // DateTime configurations
+  Time.zone(-5);
 
+  // Setting port OUTPUTs
+  pinMode(led, OUTPUT);
+
+  // Initializing port initial state
+  digitalWrite(led, LOW);
+
+  // Register Cloud variables
+  registerCloudVariables();
 }
 
 // loop() runs over and over again, as quickly as it can execute.
-void loop(void) {
-    // The core of your code will likely live here.
-    nexLoop(nex_Listen_List);
+void loop(void)
+{
+  nexLoop(nex_Listen_List);
 }
 
 // clears all the past variables and sets defaults values
-void defaultState() {
-    memset(buffer, 0, sizeof(buffer)); // this only CLEARS the buffer
-    itoa(temperature, buffer, 10); // this converts the numeric data into string and stores in buffer
-    textTemp.setText(buffer); // only after both of the above you can send it to the display
-    textLow.setText(buffer); // only after both of the above you can send it to the display
-    textHigh.setText(buffer); // only after both of the above you can send it to the display
-    snprintf(buffer, sizeof(buffer), message);
-    textLocation.setText(buffer); // only after both of the above you can send it to the display
+void defaultState()
+{
+  memset(buffer, 0, sizeof(buffer));
+  itoa(temperature, buffer, 10);
+  textTemp.setText(buffer);
+  textLow.setText(buffer);
+  textHigh.setText(buffer);
+  snprintf(buffer, sizeof(buffer), message);
+  textLocation.setText(buffer);
+}
 
+// Registers Variables with the Particle Cloud
+void registerCloudVariables()
+{
+  Particle.variable("temperatureLow", &temperatureLow, INT);
+  Particle.variable("temperatureHigh", &temperatureHigh, INT);
+  Particle.variable("temperature", &temperature, INT);
+  Particle.variable("message", message, STRING);
 }
