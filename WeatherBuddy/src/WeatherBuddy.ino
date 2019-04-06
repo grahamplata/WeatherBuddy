@@ -16,50 +16,62 @@ NexText textHigh(0, 4, "textHigh");
 NexText textTemp(0, 2, "textTemp");
 NexText textLocation(0, 5, "textLocation");
 
-int temperatureLow = 0;
-int temperatureHigh = 0;
-int temperature = 0;
+float temperatureLow = 0;
+float temperatureHigh = 0;
+float temperature = 0;
+char *message = "Weather Buddy v0.1";
 
 char buffer[100] = {0};
 
+// Touch events to watch for.
 NexTouch *nex_Listen_List[] = 
 {
-    &textLow,
-    &textHigh,
-    &textTemp,
-    NULL
+    // &textLow,
+    // &textHigh,
+    // &textTemp,
+    // NULL
 };
 
+// GPIO Variables
+int led = D7;
 
-void textTempPopCallback(void *ptr) {
-    NexText *text = (NexText *)ptr;
-    memset(buffer, 0, sizeof(buffer));
-    text->getText(buffer, sizeof(buffer));
-    if (strcmp(buffer,"ON")) {
-        digitalWrite(9, HIGH);
-        strcpy(buffer, "ON");
-    } else {
-        digitalWrite(9, LOW);
-        strcpy(buffer, "OFF");
-    }
-    text->setText(buffer);
-}
-
-// Put initialization like pinMode and begin functions here.
 void setup(void) {
-  nexInit();                        // Set the baudrate which is for debug and communicate with Nextion screen.
-  textTemp.attachPop(textTempPopCallback, &textTemp);
-  Time.zone(-5);                    // Set Time Zone to EST
+   // Initialization function
+   // Set the baudrate which is for debug and communicate with Nextion screen.
+   
+   dbSerial.begin(9600);
+   nexInit();
+   
+   // Nextion Buttons and text
+   // set initial text states
+    defaultState();
+    
+
+   // DateTime configurations
+   Time.zone(-5);
+   
+   // Setting port OUTPUT
+   pinMode(led, OUTPUT);
+   
+   // Initializing port initial state
+   digitalWrite(led, LOW);
+
 }
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop(void) {
-  // The core of your code will likely live here.
-  nexLoop(nex_Listen_List);
+    // The core of your code will likely live here.
+    nexLoop(nex_Listen_List);
 }
 
-String getTime() {
-  String timeNow = Time.format(Time.now(), TIME_FORMAT_DEFAULT);
-  timeNow = timeNow.substring(11, timeNow.length() - 6);
-  return " " + timeNow;
+// clears all the past variables and sets defaults values
+void defaultState() {
+    memset(buffer, 0, sizeof(buffer)); // this only CLEARS the buffer
+    itoa(temperature, buffer, 10); // this converts the numeric data into string and stores in buffer
+    textTemp.setText(buffer); // only after both of the above you can send it to the display
+    textLow.setText(buffer); // only after both of the above you can send it to the display
+    textHigh.setText(buffer); // only after both of the above you can send it to the display
+    snprintf(buffer, sizeof(buffer), message);
+    textLocation.setText(buffer); // only after both of the above you can send it to the display
+
 }
