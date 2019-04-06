@@ -17,11 +17,7 @@ The purpose of this project is to learn a bit about internet connected microcont
 ## Software Stack
 
 - [C/C++] - Arduino language... basically C/C++
-- [Docker] - Containing the containable
-- [Telegraf] - Agent for collecting and reporting events
-- [Chronograf] - Interface for Influx Platform
-- [InfluxDB] - Time Series Database
-- [Kapacitor] - Real-time Streaming Data Processing Engine
+- [Nextion Editor] - Used for building interfaces for Nextion HMIs
 
 ### Installation
 
