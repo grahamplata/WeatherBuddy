@@ -26,6 +26,9 @@ char *message = "Weather Buddy v0.1";
 // Utility Buffer
 char buffer[100] = {0};
 
+// State
+bool demoMode = true;
+
 // Touch events
 NexTouch *nex_Listen_List[] =
     {
@@ -41,13 +44,12 @@ int led = D7;
 // Function initialization
 int toggleLedState(String command);
 
-
 // Initialization function: Runs once on Boot
 void setup(void)
 {
   // Set the baudrate which is for debug and communicate with Nextion screen.
   dbSerial.begin(9600);
-  nexInit(); // Begin connection
+  nexInit();      // Begin connection
   defaultState(); // set initial button and text states
 
   // DateTime configurations
@@ -67,17 +69,24 @@ void setup(void)
 // loop() runs over and over again, as quickly as it can execute.
 void loop(void)
 {
+  if (!demoMode)
+  {
+    runDemo();
+    delay(3000);
+  }
   nexLoop(nex_Listen_List);
 }
 
 // clears all the past variables and sets defaults values
 void defaultState()
 {
+  // Set Ints
   memset(buffer, 0, sizeof(buffer));
   itoa(temperature, buffer, 10);
   textTemp.setText(buffer);
   textLow.setText(buffer);
   textHigh.setText(buffer);
+  // String
   snprintf(buffer, sizeof(buffer), message);
   textLocation.setText(buffer);
 }
@@ -95,6 +104,18 @@ void registerCloudVariables()
 void registerCloudFunctions()
 {
   Particle.function("led", toggleLedState);
+}
+
+// Demo Function
+void runDemo()
+{
+  String temperatureLow = String(random(60, 80));
+  String temperatureHigh = String(random(60, 80));
+  String temp = String(random(60, 80));
+  Particle.publish("temp", temp, PRIVATE);
+  textTemp.setText(temp);
+  textLow.setText(temperatureLow);
+  textHigh.setText(temperatureHigh);
 }
 
 // test function
