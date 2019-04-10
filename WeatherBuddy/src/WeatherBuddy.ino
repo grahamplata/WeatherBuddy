@@ -8,10 +8,17 @@
 // This #include statement was automatically added by the Particle IDE.
 #include <ITEADLIB_Nextion.h>
 
+// App Version Constant
+#define APP_VERSION "v0.1"
+
 USARTSerial &nexSerial = Serial1;
 
 // Nextion Objects and Pages
 // Page: 0 Nexobjects [page id:0,component id:1, component name: "helloText"]
+// Pages
+NexPage indexPage = NexPage(0, 0, "Weather");
+NexPage loadingPage = NexPage(1, 0, "Loading");
+// Component
 NexText textLow(0, 3, "textLow");
 NexText textHigh(0, 4, "textHigh");
 NexText textTemp(0, 2, "textTemp");
@@ -27,7 +34,9 @@ char *message = "Weather Buddy v0.1";
 char buffer[100] = {0};
 
 // State
+String deviceID;
 bool demoMode = true;
+bool connectToCloud = false;
 
 // Touch events
 NexTouch *nex_Listen_List[] =
@@ -41,17 +50,19 @@ NexTouch *nex_Listen_List[] =
 // GPIO Variables
 int led = D7;
 
-// Function initialization
-int toggleLedState(String command);
-
 // Initialization function: Runs once on Boot
 void setup(void)
 {
   // Set the baudrate which is for debug and communicate with Nextion screen.
   dbSerial.begin(9600);
-  nexInit();      // Begin connection
-  defaultState(); // set initial button and text states
+  nexInit(); // Begin connection
+  loadingPage.show();
 
+  deviceID = System.deviceID();
+  Particle.publish("Version", APP_VERSION);
+  Particle.publish("Device ID", deviceID);
+  Particle.publish("Status", "Online");
+  
   // DateTime configurations
   Time.zone(-5);
 
@@ -64,12 +75,15 @@ void setup(void)
   // Register Particle Cloud variables and functions
   registerCloudVariables();
   registerCloudFunctions();
+
+  indexPage.show();
+  defaultState(); // set initial button and text states
 }
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop(void)
 {
-  if (!demoMode)
+  if (demoMode == true)
   {
     runDemo();
     delay(3000);
@@ -103,7 +117,7 @@ void registerCloudVariables()
 
 void registerCloudFunctions()
 {
-  Particle.function("led", toggleLedState);
+  Particle.function("demoMode", demoModeFunc);
 }
 
 // Demo Function
@@ -119,15 +133,17 @@ void runDemo()
 }
 
 // test function
-int toggleLedState(String command)
+int demoModeFunc(String command)
 {
   if (command == "on")
   {
+    demoMode = true;
     digitalWrite(led, HIGH);
     return 0;
   }
   else
   {
+    demoMode = false;
     digitalWrite(led, LOW);
     return 0;
   }
