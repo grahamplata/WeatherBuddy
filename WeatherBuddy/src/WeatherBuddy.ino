@@ -62,7 +62,7 @@ void setup(void)
   Particle.publish("Version", APP_VERSION);
   Particle.publish("Device ID", deviceID);
   Particle.publish("Status", "Online");
-  
+
   // DateTime configurations
   Time.zone(-5);
 
@@ -75,6 +75,7 @@ void setup(void)
   // Register Particle Cloud variables and functions
   registerCloudVariables();
   registerCloudFunctions();
+  Particle.subscribe("hook-response/get_weather", myHandler, MY_DEVICES);
 
   indexPage.show();
   defaultState(); // set initial button and text states
@@ -83,11 +84,20 @@ void setup(void)
 // loop() runs over and over again, as quickly as it can execute.
 void loop(void)
 {
+  String data = String(10);
+
   if (demoMode == true)
   {
     runDemo();
     delay(3000);
   }
+  else
+  {
+    Particle.publish("get_weather", data, PRIVATE);
+    // Wait 5 minutes
+    delay(60000 * 5);
+  }
+
   nexLoop(nex_Listen_List);
 }
 
