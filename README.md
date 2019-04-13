@@ -22,5 +22,17 @@ The purpose of this project is to learn a bit about internet connected microcont
 ### Installation
 
 ```sh
-$ TODO
+# clone the repo
+git clone https://github.com/grahamplata/WeatherBuddy.git
+```
+
+### Scripts
+
+```sh
+# Locally builds for photon
+$ ./bin/build
+# Places Photon into DFU mode
+$ ./bin/dfu-mac
+# Flashes the current build to local usb photon
+$ ./bin/flash
 ```
