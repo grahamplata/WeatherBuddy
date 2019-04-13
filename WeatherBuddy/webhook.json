@@ -1,0 +1,8 @@
+{
+    "event": "get_weather",
+    "url": "https://api.darksky.net/forecast/<API>/40.133,-75.514",
+    "requestType": "GET",
+    "noDefaults": false,
+    "rejectUnauthorized": false,
+    "responseTemplate": "{{#currently}}{{temperature}}{{/currently}}~{{#daily}}{{#data}}{{temperatureMax}}~{{temperatureMin}}~{{/data}}{{/daily}}"
+}
