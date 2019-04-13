@@ -24,11 +24,8 @@ NexText textHigh(0, 4, "textHigh");
 NexText textTemp(0, 2, "textTemp");
 NexText textLocation(0, 5, "textLocation");
 
-// Global temperature Variables
-int temperatureLow = 0;
-int temperatureHigh = 0;
-int temperature = 0;
-char *message = "Weather Buddy v0.1";
+// Global Variables
+char *message = "Weather Buddy v0.2";
 
 // Utility Buffer
 char buffer[100] = {0};
@@ -73,7 +70,6 @@ void setup(void)
   digitalWrite(led, LOW);
 
   // Register Particle Cloud variables and functions
-  registerCloudVariables();
   registerCloudFunctions();
   Particle.subscribe("hook-response/get_weather", gotWeatherData, MY_DEVICES);
 
@@ -114,16 +110,6 @@ void defaultState()
   // String
   snprintf(buffer, sizeof(buffer), message);
   textLocation.setText(buffer);
-}
-
-// Setup Functions
-// Registers Variables with the Particle Cloud
-void registerCloudVariables()
-{
-  Particle.variable("temperatureLow", &temperatureLow, INT);
-  Particle.variable("temperatureHigh", &temperatureHigh, INT);
-  Particle.variable("temperature", &temperature, INT);
-  Particle.variable("message", message, STRING);
 }
 
 void registerCloudFunctions()
