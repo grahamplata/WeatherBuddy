@@ -75,7 +75,7 @@ void setup(void)
   // Register Particle Cloud variables and functions
   registerCloudVariables();
   registerCloudFunctions();
-  Particle.subscribe("hook-response/get_weather", myHandler, MY_DEVICES);
+  Particle.subscribe("hook-response/get_weather", gotWeatherData, MY_DEVICES);
 
   indexPage.show();
   defaultState(); // set initial button and text states
@@ -93,8 +93,9 @@ void loop(void)
   }
   else
   {
-    Particle.publish("get_weather", data, PRIVATE);
-    // Wait 5 minutes
+    Serial.println("");
+    Serial.println("-------------------");
+    Serial.println("Requesting Weather!");
     delay(60000 * 5);
   }
 
@@ -136,7 +137,6 @@ void runDemo()
   String temperatureLow = String(random(60, 80));
   String temperatureHigh = String(random(60, 80));
   String temp = String(random(60, 80));
-  Particle.publish("temp", temp, PRIVATE);
   textTemp.setText(temp);
   textLow.setText(temperatureLow);
   textHigh.setText(temperatureHigh);
@@ -157,4 +157,95 @@ int demoModeFunc(String command)
     digitalWrite(led, LOW);
     return 0;
   }
+}
+
+// {{#currently}}{{temperature}}{{/currently}}~{{#daily}}{{#data}}{{temperatureMax}}~{{temperatureMin}}~{{/data}}{{/daily}}
+void gotWeatherData(const char *name, const char *data)
+{
+  String str = String(data);
+  Serial.printlnf("testing %d", data);
+  // String locationStr = tryExtractString(str, "<Location>", "</Location>");
+  // String timeStr = tryExtractString(str, "<Time>", "</Time>");
+  // String weatherdiscriptionStr = tryExtractString(str, "<WeatherDescription>", "</WeatherDescription>");
+  // String tempStr = tryExtractString(str, "<Temp>", "</Temp>");
+  // String humidityStr = tryExtractString(str, "<Humidity>", "</Humidity>");
+  // String windStr = tryExtractString(str, "<Wind>", "</Wind>");
+  // String heatindexStr = tryExtractString(str, "<HeatIndex>", "</HeatIndex>");
+  // String windchillStr = tryExtractString(str, "<WindChill>", "</WindChill>");
+  // String feelslikeStr = tryExtractString(str, "<FeelsLike>", "</FeelsLike>");
+  // String visibilityStr = tryExtractString(str, "<Visibility>", "</Visibility>");
+  // String sunradiationStr = tryExtractString(str, "<SunRadiation>", "</SunRadiation>");
+  // String uvindexStr = tryExtractString(str, "<UvIndex>", "</UvIndex>");
+  // String totalrainStr = tryExtractString(str, "<TotalRainInches>", "</TotalRainInches>");
+  // String iconStr = tryExtractString(str, "<Icon>", "</Icon>");
+
+  // if (locationStr != NULL)
+  // {
+  //   Serial.println("Weather for: " + locationStr);
+  // }
+
+  // if (timeStr != NULL)
+  // {
+  //   Serial.println("Timestamp: " + timeStr);
+  // }
+
+  // if (weatherdiscriptionStr != NULL)
+  // {
+  //   Serial.println("Weather Conditon: " + weatherdiscriptionStr);
+  // }
+
+  // if (tempStr != NULL)
+  // {
+  //   Serial.println("The Temp is: " + tempStr + String(" F"));
+  // }
+
+  // if (feelslikeStr != NULL)
+  // {
+  //   Serial.println("The Real Feel Temp is: " + feelslikeStr + String(" F"));
+  // }
+
+  // if (humidityStr != NULL)
+  // {
+  //   Serial.println("The Humidity is: " + humidityStr);
+  // }
+
+  // if (windStr != NULL)
+  // {
+  //   Serial.println("Wind Conditions: " + windStr);
+  // }
+
+  // if (heatindexStr != NULL)
+  // {
+  //   Serial.println("The Heat Index is: " + heatindexStr + String(" F"));
+  // }
+
+  // if (windchillStr != NULL)
+  // {
+  //   Serial.println("The Wind Chill Index is: " + windchillStr + String(" F"));
+  // }
+
+  // if (visibilityStr != NULL)
+  // {
+  //   Serial.println("The Visibility is: " + visibilityStr + String(" Miles"));
+  // }
+
+  // if (sunradiationStr != NULL)
+  // {
+  //   Serial.println("The Solar Radiation is: " + sunradiationStr + String(" W/m2"));
+  // }
+
+  // if (uvindexStr != NULL)
+  // {
+  //   Serial.println("The UV Index is: " + uvindexStr);
+  // }
+
+  // if (totalrainStr != NULL)
+  // {
+  //   Serial.println("Total Daily Rain Fall: " + totalrainStr + String(" Inches"));
+  // }
+
+  // if (iconStr != NULL)
+  // {
+  //   Serial.println("Icon for current weather: " + iconStr);
+  // }
 }
