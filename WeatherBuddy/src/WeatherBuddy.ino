@@ -161,7 +161,22 @@ int demoModeFunc(String command)
 
 void gotWeatherData(const char *name, const char *data)
 {
-  Serial.print("Running gotweatherData function");
+  Serial.print("Got Weather Data!\n");
   String str = String(data);
-  textTemp.setText(str);
+  char strBuffer[500] = "";
+  str.toCharArray(strBuffer, 500);
+  int currentTemperature = atoi(strtok(strBuffer, "\"~"));
+  int temperatureMax = atoi(strtok(NULL, "~"));
+  int temperatureMin = atoi(strtok(NULL, "~"));
+
+  Serial.print("CurrentTemperature: ");
+  Serial.println(currentTemperature);
+  Serial.print("temperatureMax: ");
+  Serial.println(temperatureMax);
+  Serial.print("temperatureMin: ");
+  Serial.println(temperatureMin);
+
+  textTemp.setText(String(currentTemperature));
+  textLow.setText(String(temperatureMin));
+  textHigh.setText(String(temperatureMax));
 }
