@@ -35,7 +35,7 @@ char buffer[100] = {0};
 
 // State
 String deviceID;
-bool demoMode = true;
+bool demoMode = false;
 bool connectToCloud = false;
 
 // Touch events
