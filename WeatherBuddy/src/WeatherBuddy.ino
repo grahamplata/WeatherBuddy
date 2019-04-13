@@ -171,5 +171,5 @@ void gotWeatherData(const char *name, const char *data)
   textTemp.setText(String(currentTemperature));
   textLow.setText(String(temperatureMin));
   textHigh.setText(String(temperatureMax));
-  textTime.setText(String(currentTime));
+  textTime.setText(String(Time.format(currentTime)));
 }
