@@ -23,6 +23,7 @@ NexText textLow(0, 3, "textLow");
 NexText textHigh(0, 4, "textHigh");
 NexText textTemp(0, 2, "textTemp");
 NexText textLocation(0, 5, "textLocation");
+NexText textTime(0, 6, "time");
 
 // Global Variables
 char *message = "Weather Buddy v0.2";
@@ -169,4 +170,5 @@ void gotWeatherData(const char *name, const char *data)
   textTemp.setText(String(currentTemperature));
   textLow.setText(String(temperatureMin));
   textHigh.setText(String(temperatureMax));
+  textTime.setText(String(currentTime));
 }
