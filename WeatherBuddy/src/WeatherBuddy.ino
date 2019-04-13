@@ -26,6 +26,7 @@ NexText textLocation(0, 5, "textLocation");
 
 // Global Variables
 char *message = "Weather Buddy v0.2";
+int temperature = 0;
 
 // Utility Buffer
 char buffer[100] = {0};
@@ -152,11 +153,14 @@ void gotWeatherData(const char *name, const char *data)
   char strBuffer[500] = "";
   str.toCharArray(strBuffer, 500);
   int currentTemperature = atoi(strtok(strBuffer, "\"~"));
+  int currentTime = atoi(strtok(NULL, "~"));
   int temperatureMax = atoi(strtok(NULL, "~"));
   int temperatureMin = atoi(strtok(NULL, "~"));
 
   Serial.print("CurrentTemperature: ");
   Serial.println(currentTemperature);
+  Serial.print("currentTime: ");
+  Serial.println(currentTime);
   Serial.print("temperatureMax: ");
   Serial.println(temperatureMax);
   Serial.print("temperatureMin: ");
