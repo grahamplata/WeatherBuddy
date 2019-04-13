@@ -4,5 +4,5 @@
     "requestType": "GET",
     "noDefaults": false,
     "rejectUnauthorized": false,
-    "responseTemplate": "{{#currently}}{{temperature}}{{/currently}}~{{#daily}}{{#data}}{{temperatureMax}}~{{temperatureMin}}~{{/data}}{{/daily}}"
+    "responseTemplate": "{{#currently}}{{temperature}}~{{time}}{{/currently}}~{{#daily}}{{#data}}{{temperatureMax}}~{{temperatureMin}}~{{/data}}{{/daily}}"
 }

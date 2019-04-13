@@ -149,7 +149,8 @@ int demoModeFunc(String command)
 
 void gotWeatherData(const char *name, const char *data)
 {
-  Serial.print("Got Weather Data!\n");
+  Serial.println("Got Weather Data!");
+  Serial.println(data);
   String str = String(data);
   char strBuffer[500] = "";
   str.toCharArray(strBuffer, 500);
