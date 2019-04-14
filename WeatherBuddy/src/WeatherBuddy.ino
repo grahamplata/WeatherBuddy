@@ -38,13 +38,7 @@ bool demoMode = false;
 bool connectToCloud = false;
 
 // Touch events
-NexTouch *nex_Listen_List[] =
-    {
-        // &textLow,
-        // &textHigh,
-        // &textTemp,
-        // NULL
-};
+NexTouch *nex_Listen_List[] = {&textTemp, NULL};
 
 // GPIO Variables
 int led = D7;
@@ -54,8 +48,8 @@ void setup(void)
 {
   // Set the baudrate which is for debug and communicate with Nextion screen.
   dbSerial.begin(9600);
-  nexInit(); // Begin connection
-  loadingPage.show();
+  nexInit(); // Begin Nextion connection
+  // textTemp.attachPop(temperaturePopCallback);
 
   deviceID = System.deviceID();
   Particle.publish("Version", APP_VERSION);
@@ -75,7 +69,6 @@ void setup(void)
   registerCloudFunctions();
   Particle.subscribe("hook-response/get_weather", gotWeatherData, MY_DEVICES);
 
-  indexPage.show();
   defaultState(); // set initial button and text states
 }
 
@@ -94,6 +87,7 @@ void loop(void)
     Serial.println("");
     Serial.println("-------------------");
     Serial.println("Requesting Weather!");
+    Particle.publish("get_weather", data, PRIVATE);
     delay(60000 * 5);
   }
 
@@ -149,8 +143,6 @@ int demoModeFunc(String command)
 
 void gotWeatherData(const char *name, const char *data)
 {
-  Serial.println("Got Weather Data!");
-  Serial.println(data);
   String str = String(data);
   char strBuffer[500] = "";
   str.toCharArray(strBuffer, 500);
@@ -158,15 +150,6 @@ void gotWeatherData(const char *name, const char *data)
   int currentTime = atoi(strtok(NULL, "~"));
   int temperatureMax = atoi(strtok(NULL, "~"));
   int temperatureMin = atoi(strtok(NULL, "~"));
-
-  Serial.print("CurrentTemperature: ");
-  Serial.println(currentTemperature);
-  Serial.print("currentTime: ");
-  Serial.println(currentTime);
-  Serial.print("temperatureMax: ");
-  Serial.println(temperatureMax);
-  Serial.print("temperatureMin: ");
-  Serial.println(temperatureMin);
 
   textTemp.setText(String(currentTemperature));
   textLow.setText(String(temperatureMin));
