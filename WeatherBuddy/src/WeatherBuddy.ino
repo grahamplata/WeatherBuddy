@@ -26,7 +26,12 @@ NexText textLocation(0, 5, "textLocation");
 NexText textTime(0, 6, "time");
 
 // Global Variables
-int temperature = 0;
+int currentTime = 0;
+double temperature = 0.0;
+int temperatureMax = 0;
+int temperatureMin = 0;
+double humidity = 0.0;
+double windSpeed = 0.0;
 
 // Utility Buffer
 char buffer[100] = {0};
@@ -37,7 +42,8 @@ bool demoMode = false;
 bool connectToCloud = false;
 
 // Touch events
-NexTouch *nex_Listen_List[] = {&textTemp, NULL};
+NexTouch *nex_Listen_List[] = {
+    &textTemp, NULL};
 
 // GPIO Variables
 int led = D7;
@@ -48,12 +54,19 @@ void setup(void)
   // Set the baudrate which is for debug and communicate with Nextion screen.
   dbSerial.begin(9600);
   nexInit(); // Begin Nextion connection
-  // textTemp.attachPop(temperaturePopCallback);
+  textTemp.attachPop(temperaturePopCallback);
 
   deviceID = System.deviceID();
   Particle.publish("Version", APP_VERSION);
   Particle.publish("Device ID", deviceID);
   Particle.publish("Status", "Online");
+
+  Particle.variable("currentTime", currentTime);
+  Particle.variable("temperature", temperature);
+  Particle.variable("temperatureMax", temperatureMax);
+  Particle.variable("temperatureMin", temperatureMin);
+  Particle.variable("humidity", humidity);
+  Particle.variable("windSpeed", windSpeed);
 
   // DateTime configurations
   Time.zone(-5);
@@ -65,8 +78,7 @@ void setup(void)
   digitalWrite(led, LOW);
 
   // Register Particle Cloud variables and functions
-  registerCloudFunctions();
-  Particle.subscribe("hook-response/get_weather", gotWeatherData, MY_DEVICES);
+  registerWithCloud();
 
   defaultState(); // set initial button and text states
 }
@@ -107,9 +119,10 @@ void defaultState()
   textLocation.setText(buffer);
 }
 
-void registerCloudFunctions()
+void registerWithCloud()
 {
   Particle.function("demoMode", demoModeFunc);
+  Particle.subscribe("hook-response/get_weather", gotWeatherData, MY_DEVICES);
 }
 
 // Demo Function
@@ -140,17 +153,29 @@ int demoModeFunc(String command)
   }
 }
 
+void temperaturePopCallback(void *ptr)
+{
+  String data = String(10);
+  Serial.println("");
+  Serial.println("-------------------");
+  Serial.println("Requesting Weather!");
+  Particle.publish("get_weather", data, PRIVATE);
+}
+
 void gotWeatherData(const char *name, const char *data)
 {
   String str = String(data);
   char strBuffer[500] = "";
   str.toCharArray(strBuffer, 500);
-  int currentTemperature = atoi(strtok(strBuffer, "\"~"));
-  int currentTime = atoi(strtok(NULL, "~"));
-  int temperatureMax = atoi(strtok(NULL, "~"));
-  int temperatureMin = atoi(strtok(NULL, "~"));
 
-  textTemp.setText(String(currentTemperature));
+  temperature = atof(strtok(strBuffer, "~"));
+  currentTime = atoi(strtok(NULL, "~"));
+  humidity = atof(strtok(NULL, "~"));
+  windSpeed = atof(strtok(NULL, "~"));
+  temperatureMax = atoi(strtok(NULL, "~"));
+  temperatureMin = atoi(strtok(NULL, "~"));
+
+  textTemp.setText(String(temperature));
   textLow.setText(String(temperatureMin));
   textHigh.setText(String(temperatureMax));
   textTime.setText(String(Time.format(currentTime)));
