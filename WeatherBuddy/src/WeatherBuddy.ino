@@ -15,15 +15,17 @@ USARTSerial &nexSerial = Serial1;
 
 // Nextion Objects and Pages
 // Page: 0 Nexobjects [page id:0,component id:1, component name: "helloText"]
-// Pages
 NexPage indexPage = NexPage(0, 0, "Weather");
 NexPage loadingPage = NexPage(1, 0, "Loading");
-// Component
+// Components
 NexText textLow(0, 3, "textLow");
 NexText textHigh(0, 4, "textHigh");
 NexText textTemp(0, 2, "textTemp");
 NexText textLocation(0, 5, "textLocation");
 NexText textTime(0, 6, "time");
+
+// Nextion Touch events
+NexTouch *nex_Listen_List[] = {&textTemp, NULL};
 
 // Global Variables
 int currentTime = 0;
@@ -36,14 +38,10 @@ double windSpeed = 0.0;
 // Utility Buffer
 char buffer[100] = {0};
 
-// State
+// Device State
 String deviceID;
 bool demoMode = false;
 bool connectToCloud = false;
-
-// Touch events
-NexTouch *nex_Listen_List[] = {
-    &textTemp, NULL};
 
 // GPIO Variables
 int led = D7;
@@ -53,20 +51,8 @@ void setup(void)
 {
   // Set the baudrate which is for debug and communicate with Nextion screen.
   dbSerial.begin(9600);
-  nexInit(); // Begin Nextion connection
-  textTemp.attachPop(temperaturePopCallback);
-
-  deviceID = System.deviceID();
-  Particle.publish("Version", APP_VERSION);
-  Particle.publish("Device ID", deviceID);
-  Particle.publish("Status", "Online");
-
-  Particle.variable("currentTime", currentTime);
-  Particle.variable("temperature", temperature);
-  Particle.variable("temperatureMax", temperatureMax);
-  Particle.variable("temperatureMin", temperatureMin);
-  Particle.variable("humidity", humidity);
-  Particle.variable("windSpeed", windSpeed);
+  nexInit();                                  // Begin Nextion connection
+  textTemp.attachPop(temperaturePopCallback); // Attach event listener to refresh variables
 
   // DateTime configurations
   Time.zone(-5);
@@ -77,10 +63,11 @@ void setup(void)
   // Initializing port initial state
   digitalWrite(led, LOW);
 
-  // Register Particle Cloud variables and functions
+  // Register Particle Cloud variables, functions and subscriptions
   registerWithCloud();
 
-  defaultState(); // set initial button and text states
+  // set initial button and text states
+  defaultState();
 }
 
 // loop() runs over and over again, as quickly as it can execute.
@@ -108,24 +95,35 @@ void loop(void)
 // clears all the past variables and sets defaults values
 void defaultState()
 {
-  // Set Ints
   memset(buffer, 0, sizeof(buffer));
   itoa(temperature, buffer, 10);
   textTemp.setText(buffer);
   textLow.setText(buffer);
   textHigh.setText(buffer);
-  // String
   snprintf(buffer, sizeof(buffer), APP_VERSION);
   textLocation.setText(buffer);
 }
 
+// Register Particle Cloud variables, functions and subscriptions
 void registerWithCloud()
 {
+  deviceID = System.deviceID();
+  Particle.publish("Version", APP_VERSION);
+  Particle.publish("Device ID", deviceID);
+  Particle.publish("Status", "Online");
+
+  Particle.variable("currentTime", currentTime);
+  Particle.variable("temperature", temperature);
+  Particle.variable("temperatureMax", temperatureMax);
+  Particle.variable("temperatureMin", temperatureMin);
+  Particle.variable("humidity", humidity);
+  Particle.variable("windSpeed", windSpeed);
+
   Particle.function("demoMode", demoModeFunc);
   Particle.subscribe("hook-response/get_weather", gotWeatherData, MY_DEVICES);
 }
 
-// Demo Function
+// Demo Mode
 void runDemo()
 {
   String temperatureLow = String(random(60, 80));
@@ -136,7 +134,7 @@ void runDemo()
   textHigh.setText(temperatureHigh);
 }
 
-// test function
+// Test Function
 int demoModeFunc(String command)
 {
   if (command == "on")
@@ -153,6 +151,7 @@ int demoModeFunc(String command)
   }
 }
 
+// Request New Data from Darksky
 void temperaturePopCallback(void *ptr)
 {
   String data = String(10);
@@ -162,6 +161,7 @@ void temperaturePopCallback(void *ptr)
   Particle.publish("get_weather", data, PRIVATE);
 }
 
+// Parse and Set new data
 void gotWeatherData(const char *name, const char *data)
 {
   String str = String(data);
