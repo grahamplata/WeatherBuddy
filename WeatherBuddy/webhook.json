@@ -1,8 +1,8 @@
 {
-    "event": "get_weather",
-    "url": "https://api.darksky.net/forecast/<API>/40.133,-75.514",
-    "requestType": "GET",
-    "noDefaults": false,
-    "rejectUnauthorized": false,
-    "responseTemplate": "{{#currently}}{{temperature}}~{{time}}{{/currently}}~{{#daily}}{{#data}}{{temperatureMax}}~{{temperatureMin}}~{{/data}}{{/daily}}"
+  "event": "get_weather",
+  "url": "https://api.darksky.net/forecast/48c3d54482be7bd0fa7326226f3ed7e9/40.133,-75.514",
+  "requestType": "GET",
+  "noDefaults": false,
+  "rejectUnauthorized": false,
+  "responseTemplate": "{{#currently}}{{temperature}}~{{time}}~{{humidity}}~{{windSpeed}}{{/currently}}~{{#daily}}{{#data}}{{temperatureMax}}~{{temperatureMin}}~{{/data}}{{/daily}}"
 }

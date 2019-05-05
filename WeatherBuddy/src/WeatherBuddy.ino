@@ -9,7 +9,7 @@
 #include <ITEADLIB_Nextion.h>
 
 // App Version Constant
-#define APP_VERSION "v0.1"
+#define APP_VERSION "v0.3"
 
 USARTSerial &nexSerial = Serial1;
 
@@ -26,7 +26,6 @@ NexText textLocation(0, 5, "textLocation");
 NexText textTime(0, 6, "time");
 
 // Global Variables
-char *message = "Weather Buddy v0.2";
 int temperature = 0;
 
 // Utility Buffer
@@ -104,7 +103,7 @@ void defaultState()
   textLow.setText(buffer);
   textHigh.setText(buffer);
   // String
-  snprintf(buffer, sizeof(buffer), message);
+  snprintf(buffer, sizeof(buffer), APP_VERSION);
   textLocation.setText(buffer);
 }
 
