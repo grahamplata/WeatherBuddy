@@ -23,6 +23,8 @@ NexText textHigh(0, 4, "textHigh");
 NexText textTemp(0, 2, "textTemp");
 NexText textLocation(0, 5, "textLocation");
 NexText textTime(0, 6, "time");
+NexText textHumidity(0, 11, "textHumidity");
+NexText textWind(0, 14, "textWind");
 
 // Nextion Touch events
 NexTouch *nex_Listen_List[] = {&textTemp, NULL};
@@ -32,8 +34,8 @@ int currentTime = 0;
 double temperature = 0.0;
 int temperatureMax = 0;
 int temperatureMin = 0;
-double humidity = 0.0;
-double windSpeed = 0.0;
+int humidity = 0;
+int windSpeed = 0;
 
 // Utility Buffer
 char buffer[100] = {0};
@@ -86,7 +88,7 @@ void loop(void)
     Serial.println("-------------------");
     Serial.println("Requesting Weather!");
     Particle.publish("get_weather", data, PRIVATE);
-    delay(60000 * 5);
+    delay(60000 * 2); // ask every two minutes
   }
 
   nexLoop(nex_Listen_List);
@@ -129,9 +131,13 @@ void runDemo()
   String temperatureLow = String(random(60, 80));
   String temperatureHigh = String(random(60, 80));
   String temp = String(random(60, 80));
+  String temp2 = String(random(60, 80));
+  String temp3 = String(random(60, 80));
   textTemp.setText(temp);
   textLow.setText(temperatureLow);
   textHigh.setText(temperatureHigh);
+  textHumidity.setText(temp2);
+  textWind.setText(temp3);
 }
 
 // Test Function
@@ -170,12 +176,14 @@ void gotWeatherData(const char *name, const char *data)
 
   temperature = atof(strtok(strBuffer, "~"));
   currentTime = atoi(strtok(NULL, "~"));
-  humidity = atof(strtok(NULL, "~"));
+  humidity = 100 * atof(strtok(NULL, "~"));
   windSpeed = atof(strtok(NULL, "~"));
   temperatureMax = atoi(strtok(NULL, "~"));
   temperatureMin = atoi(strtok(NULL, "~"));
 
   textTemp.setText(String(temperature));
+  textHumidity.setText(String(humidity));
+  textWind.setText(String(windSpeed));
   textLow.setText(String(temperatureMin));
   textHigh.setText(String(temperatureMax));
   textTime.setText(String(Time.format(currentTime)));
